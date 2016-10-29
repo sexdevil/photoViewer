@@ -101,9 +101,15 @@ module.exports = function() {
             var imgHeight = $currentImage.height();
             var leftTrigger = 0; // 两次超过右边界触发右侧滑动
             var rightTrigger = 0;// 两次超过左边界触发右侧滑动
+            var enableMoving = false;//是否启用滑动
             $('#photo-viewer').on('touchstart',function(e){
                 if(e.touches.length>=2){
                     pointersDistance = Math.sqrt((e.touches[1].pageX - e.touches[0].pageX)*(e.touches[1].pageX - e.touches[0].pageX)+(e.touches[1].pageY - e.touches[0].pageY)*(e.touches[1].pageY - e.touches[0].pageY))
+                }
+                if($(e.touches[0].target).data('hook')=='photoImgage'){
+                        enableMoving =true; //只有第一接触点是图片 才可移动
+                }else{
+                        enableMoving = false;
                 }
                 positionX = e.touches[0].pageX;
                 positionY = e.touches[0].pageY;
@@ -126,11 +132,14 @@ module.exports = function() {
                 }
                 if(scale!=1){
                 //滑动
-                scrollX = scrollX + (e.touches[0].pageX - positionX);
-                scrollY = scrollY + (e.touches[0].pageY - positionY);
+                if(enableMoving){
+                    scrollX = scrollX + (e.touches[0].pageX - positionX);
+                    scrollY = scrollY + (e.touches[0].pageY - positionY);
+                }
                 positionX = e.touches[0].pageX;
                 positionY = e.touches[0].pageY;
                 //合成全部变换
+                console.log('translate3d('+(scrollX-imgWidth)+'px,'+(scrollY-imgHeight)+'px,0) scale('+scale+')')
                 setCssPrefix($currentImage,'transform','translate3d('+(scrollX-imgWidth)+'px,'+(scrollY-imgHeight)+'px,0) scale('+scale+')');
                     if(!!self.BAADObj)self.BAADObj.enable = false;
                 }else{

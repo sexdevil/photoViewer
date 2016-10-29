@@ -148,9 +148,15 @@ var webpack_photoViewer =
 	            var imgHeight = $currentImage.height();
 	            var leftTrigger = 0; // 两次超过右边界触发右侧滑动
 	            var rightTrigger = 0;// 两次超过左边界触发右侧滑动
+	            var enableMoving = false;//是否启用滑动
 	            $('#photo-viewer').on('touchstart',function(e){
 	                if(e.touches.length>=2){
 	                    pointersDistance = Math.sqrt((e.touches[1].pageX - e.touches[0].pageX)*(e.touches[1].pageX - e.touches[0].pageX)+(e.touches[1].pageY - e.touches[0].pageY)*(e.touches[1].pageY - e.touches[0].pageY))
+	                }
+	                if($(e.touches[0].target).data('hook')=='photoImgage'){
+	                        enableMoving =true; //只有第一接触点是图片 才可移动
+	                }else{
+	                        enableMoving = false;
 	                }
 	                positionX = e.touches[0].pageX;
 	                positionY = e.touches[0].pageY;
@@ -173,11 +179,14 @@ var webpack_photoViewer =
 	                }
 	                if(scale!=1){
 	                //滑动
-	                scrollX = scrollX + (e.touches[0].pageX - positionX);
-	                scrollY = scrollY + (e.touches[0].pageY - positionY);
+	                if(enableMoving){
+	                    scrollX = scrollX + (e.touches[0].pageX - positionX);
+	                    scrollY = scrollY + (e.touches[0].pageY - positionY);
+	                }
 	                positionX = e.touches[0].pageX;
 	                positionY = e.touches[0].pageY;
 	                //合成全部变换
+	                console.log('translate3d('+(scrollX-imgWidth)+'px,'+(scrollY-imgHeight)+'px,0) scale('+scale+')')
 	                setCssPrefix($currentImage,'transform','translate3d('+(scrollX-imgWidth)+'px,'+(scrollY-imgHeight)+'px,0) scale('+scale+')');
 	                    if(!!self.BAADObj)self.BAADObj.enable = false;
 	                }else{
@@ -820,7 +829,7 @@ var webpack_photoViewer =
 /* 10 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id=\"photo-viewer\" class=\"photo-viewer-back\">\n    <div class=\"loading-card\">\n        <div class=\"line-spin-fade-loader-outter\">\n            <div class=\"line-spin-fade-loader\">\n                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>\n            </div>\n        </div>\n    </div>\n    <section class=\"photo-viewer-content\">\n        {{? !!it.preloadImage}}<img src=\"{{=it.preloadImage.originSrc}}\" class=\"preload-img\">{{?}}\n        <div id=\"photo-viewer-inner\" class=\"photo-viewer-inner\" data-action=\"destoryPhoto\">\n        {{~it.imgList :value:index }}\n        <a class=\"photo-viewer-item\" href=\"javascript:;\" data-action=\"destoryPhoto\" style=\"width:{{=it.windowWidth}}px;\"> <img data-action=\"destoryPhoto\" src=\"{{=value.imgSrc}}\" style=\"opacity: 1;\"> </a>\n        {{~}}\n        </div>\n    </section>\n    <div id=\"bnrs-indic-wrap\" style=\"display: none\" class=\"bnrs-indic-wrap\">   \n        {{~it.imgList :value:index }}\n        <i class=\"j-indic{{=(index+1)}} i-circle bnrs-indic {{? index==0}}indic-focus{{?}}\"></i>\n        {{~}} \n    </div>\n</div>";
+	module.exports = "<div id=\"photo-viewer\" class=\"photo-viewer-back\">\n    <div class=\"loading-card\">\n        <div class=\"line-spin-fade-loader-outter\">\n            <div class=\"line-spin-fade-loader\">\n                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>\n            </div>\n        </div>\n    </div>\n    <section class=\"photo-viewer-content\">\n        {{? !!it.preloadImage}}<img src=\"{{=it.preloadImage.originSrc}}\" class=\"preload-img\">{{?}}\n        <div id=\"photo-viewer-inner\" class=\"photo-viewer-inner\" data-action=\"destoryPhoto\">\n        {{~it.imgList :value:index }}\n        <a class=\"photo-viewer-item\" href=\"javascript:;\" data-action=\"destoryPhoto\" style=\"width:{{=it.windowWidth}}px;\"> <img data-action=\"destoryPhoto\" data-hook='photoImgage' src=\"{{=value.imgSrc}}\" style=\"opacity: 1;\"> </a>\n        {{~}}\n        </div>\n    </section>\n    <div id=\"bnrs-indic-wrap\" style=\"display: none\" class=\"bnrs-indic-wrap\">   \n        {{~it.imgList :value:index }}\n        <i class=\"j-indic{{=(index+1)}} i-circle bnrs-indic {{? index==0}}indic-focus{{?}}\"></i>\n        {{~}} \n    </div>\n</div>";
 
 /***/ }
 /******/ ]);

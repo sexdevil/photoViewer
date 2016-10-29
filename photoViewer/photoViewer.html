@@ -10,7 +10,7 @@
         {{? !!it.preloadImage}}<img src="{{=it.preloadImage.originSrc}}" class="preload-img">{{?}}
         <div id="photo-viewer-inner" class="photo-viewer-inner" data-action="destoryPhoto">
         {{~it.imgList :value:index }}
-        <a class="photo-viewer-item" href="javascript:;" data-action="destoryPhoto" style="width:{{=it.windowWidth}}px;"> <img data-action="destoryPhoto" src="{{=value.imgSrc}}" style="opacity: 1;"> </a>
+        <a class="photo-viewer-item" href="javascript:;" data-action="destoryPhoto" style="width:{{=it.windowWidth}}px;"> <img data-action="destoryPhoto" data-hook='photoImgage' src="{{=value.imgSrc}}" style="opacity: 1;"> </a>
         {{~}}
         </div>
     </section>

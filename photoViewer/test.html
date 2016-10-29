@@ -44,7 +44,7 @@
 <script src="/static/js/zepto.js"></script>
 <script src="/static/js/webpack_photoViewer.js"></script>
 <script>
-    $('.photoList').on('click',function(e){
+    $('.photoList').on('touchend',function(e){
         var imgList = [];
         var photoViewer = webpack_photoViewer();
         $(this).find('img').each(function(){
@@ -59,9 +59,9 @@
                     order:order,   //当前选中第几张照片 从零开算
                     imgList:imgList, //轮播照片列表
                     disableAutoPlay:true, //是否仅用自动播放动画,默认为true
-                    target:e.target
                 }
         ).show()
+        e.preventDefault();
     })
 </script>
 </body>

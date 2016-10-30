@@ -237,7 +237,7 @@ var webpack_photoViewer =
 	                        baseScale =1;
 	                        scale=1;
 	                        self.BAADObj.enable = true;
-	                        self.BAADObj.moveNext();
+	                        self.BAADObj.movePrev();
 	                    }
 	                }else if(leftTrigger>=2){
 	                    if(!!self.BAADObj){
@@ -246,7 +246,7 @@ var webpack_photoViewer =
 	                        baseScale =1;
 	                        scale=1;
 	                        self.BAADObj.enable = true;
-	                        self.BAADObj.movePrev();
+	                        self.BAADObj.moveNext();
 	                    }
 	                }
 

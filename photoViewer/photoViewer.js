@@ -190,7 +190,7 @@ module.exports = function() {
                         baseScale =1;
                         scale=1;
                         self.BAADObj.enable = true;
-                        self.BAADObj.moveNext();
+                        self.BAADObj.movePrev();
                     }
                 }else if(leftTrigger>=2){
                     if(!!self.BAADObj){
@@ -199,7 +199,7 @@ module.exports = function() {
                         baseScale =1;
                         scale=1;
                         self.BAADObj.enable = true;
-                        self.BAADObj.movePrev();
+                        self.BAADObj.moveNext();
                     }
                 }
 

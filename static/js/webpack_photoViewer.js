@@ -54,8 +54,8 @@ var webpack_photoViewer =
 	var photoViewerHTML = __webpack_require__(10);
 
 	function compileHTML(html,data){
-	   var template = doT.template(html);
-	   return template(data)
+	    var template = doT.template(html);
+	    return template(data)
 	}
 
 	function parseDom(arg) {
@@ -97,7 +97,7 @@ var webpack_photoViewer =
 
 	            $("#photo-viewer-inner").find('img').eq(ops.order).on('load',function(){
 	                if(this.complete){
-	                   self.hideLoading();
+	                    self.hideLoading();
 	                }
 	                $("#photo-viewer-inner img").addClass("img-loaded");
 	            })
@@ -127,11 +127,11 @@ var webpack_photoViewer =
 	        },
 	        bindEvent:function(){
 	            var self = this;
-	           $('#photo-viewer').on('click',function(e){
-	               if($(e.target).attr('data-action') == 'destoryPhoto'){
-	                  self.destoryPhoto();
-	               }
-	           })
+	            $('#photo-viewer').on('click',function(e){
+	                if($(e.target).attr('data-action') == 'destoryPhoto'){
+	                    self.destoryPhoto();
+	                }
+	            })
 	        },
 	        bindScaleEvent:function(){
 	            var pointersDistance = 0;//记录两个手指距离
@@ -144,25 +144,34 @@ var webpack_photoViewer =
 	            var windowWidth = $(window).width();//窗口宽度
 	            var windowHeight = $(window).height();//窗口高度
 	            var $currentImage = $('#photo-viewer-inner img');
-	            var imgWidth = $currentImage.width();
-	            var imgHeight = $currentImage.height();
+	            var imgWidth = 0;
+	            var imgHeight =0;
 	            var leftTrigger = 0; // 两次超过右边界触发右侧滑动
 	            var rightTrigger = 0;// 两次超过左边界触发右侧滑动
 	            var enableMoving = false;//是否启用滑动
+	            var enableScale = false;//启用缩放
 	            $('#photo-viewer').on('touchstart',function(e){
+	                if($(e.touches[0].target).data('hook')=='photoImgage'){
+	                    enableMoving =true; //只有第一接触点是图片 才可移动
+	                        imgWidth = $(e.touches[0].target).width()/scale;
+	                        imgHeight = $(e.touches[0].target).height()/scale;
+	                }else{
+	                    enableMoving = false;
+	                }
 	                if(e.touches.length>=2){
 	                    pointersDistance = Math.sqrt((e.touches[1].pageX - e.touches[0].pageX)*(e.touches[1].pageX - e.touches[0].pageX)+(e.touches[1].pageY - e.touches[0].pageY)*(e.touches[1].pageY - e.touches[0].pageY))
+	                    if($(e.touches[0].target).data('hook')=='photoImgage' && $(e.touches[1].target).data('hook')=='photoImgage'){
+	                        enableScale = true;//两点都是图片 可以缩放
+	                    }else {
+	                        enableScale = false;
+	                    }
 	                }
-	                if($(e.touches[0].target).data('hook')=='photoImgage'){
-	                        enableMoving =true; //只有第一接触点是图片 才可移动
-	                }else{
-	                        enableMoving = false;
-	                }
+
 	                positionX = e.touches[0].pageX;
 	                positionY = e.touches[0].pageY;
 	                setCssPrefix($currentImage,'transition','0s');
 	                if(!!$currentImage.attr('data-scaleRate')){
-	                  baseScale =  $currentImage.attr('data-scaleRate')
+	                    baseScale =  $currentImage.attr('data-scaleRate')
 	                }
 	                if(baseScale<1){
 	                    baseScale=1
@@ -173,21 +182,21 @@ var webpack_photoViewer =
 	            })
 	            $('#photo-viewer').on('touchmove',function(e){
 	                //缩放
-	                if(e.touches.length>=2){
+	                if(e.touches.length>=2 && enableScale){
 	                    scale =baseScale * Math.sqrt((e.touches[1].pageX - e.touches[0].pageX)*(e.touches[1].pageX - e.touches[0].pageX)+(e.touches[1].pageY - e.touches[0].pageY)*(e.touches[1].pageY - e.touches[0].pageY))/pointersDistance
 	                    $currentImage.attr('data-scaleRate',scale)
 	                }
 	                if(scale!=1){
-	                //滑动
-	                if(enableMoving){
-	                    scrollX = scrollX + (e.touches[0].pageX - positionX);
-	                    scrollY = scrollY + (e.touches[0].pageY - positionY);
-	                }
-	                positionX = e.touches[0].pageX;
-	                positionY = e.touches[0].pageY;
-	                //合成全部变换
-	                console.log('translate3d('+(scrollX-imgWidth)+'px,'+(scrollY-imgHeight)+'px,0) scale('+scale+')')
-	                setCssPrefix($currentImage,'transform','translate3d('+(scrollX-imgWidth)+'px,'+(scrollY-imgHeight)+'px,0) scale('+scale+')');
+	                    //滑动
+	                    if(enableMoving){
+	                        scrollX = scrollX + (e.touches[0].pageX - positionX);
+	                        scrollY = scrollY + (e.touches[0].pageY - positionY);
+	                    }
+	                    positionX = e.touches[0].pageX;
+	                    positionY = e.touches[0].pageY;
+	                    //合成全部变换
+	                    console.log('translate3d('+(scrollX-imgWidth)+'px,'+(scrollY-imgHeight/2)+'px,0) scale('+scale+')')
+	                    setCssPrefix($currentImage,'transform','translate3d('+(scrollX-imgWidth/2)+'px,'+(scrollY-imgHeight/2)+'px,0) scale('+scale+')');
 	                    if(!!self.BAADObj)self.BAADObj.enable = false;
 	                }else{
 	                    if(!!self.BAADObj)self.BAADObj.enable = true;
@@ -229,13 +238,16 @@ var webpack_photoViewer =
 	                    scrollY = rangeY
 	                }
 	                //合成全部变换
-	                setCssPrefix($currentImage,'transform','translate3d('+(scrollX-imgWidth)+'px,'+(scrollY-imgHeight)+'px,0) scale('+scale+')');
+	                setCssPrefix($currentImage,'transform','translate3d('+(scrollX-imgWidth/2)+'px,'+(scrollY-imgHeight/2)+'px,0) scale('+scale+')');
 	                if(rightTrigger>=2){
 	                    if(!!self.BAADObj){
 	                        setCssPrefix($currentImage,'transform','translate3d(-50%,-50%,0) scale(1)');
 	                        rightTrigger = 0; //标志位归零
 	                        baseScale =1;
 	                        scale=1;
+	                        $currentImage.attr('data-scaleRate',1)
+	                        scrollX = 0;
+	                        scrollY = 0;
 	                        self.BAADObj.enable = true;
 	                        self.BAADObj.movePrev();
 	                    }
@@ -245,6 +257,9 @@ var webpack_photoViewer =
 	                        leftTrigger = 0; //标志位归零
 	                        baseScale =1;
 	                        scale=1;
+	                        $currentImage.attr('data-scaleRate',1)
+	                        scrollX = 0;
+	                        scrollY = 0;
 	                        self.BAADObj.enable = true;
 	                        self.BAADObj.moveNext();
 	                    }
@@ -256,7 +271,7 @@ var webpack_photoViewer =
 	            this.$loadingDom.show()
 	        },
 	        hideLoading:function(){
-	           this.$loadingDom.hide()
+	            this.$loadingDom.hide()
 	            this.$preLoadImage.hide()
 	        },
 	        show:function(){
@@ -829,7 +844,7 @@ var webpack_photoViewer =
 /* 10 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id=\"photo-viewer\" class=\"photo-viewer-back\">\n    <div class=\"loading-card\">\n        <div class=\"line-spin-fade-loader-outter\">\n            <div class=\"line-spin-fade-loader\">\n                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>\n            </div>\n        </div>\n    </div>\n    <section class=\"photo-viewer-content\">\n        {{? !!it.preloadImage}}<img src=\"{{=it.preloadImage.originSrc}}\" class=\"preload-img\">{{?}}\n        <div id=\"photo-viewer-inner\" class=\"photo-viewer-inner\" data-action=\"destoryPhoto\">\n        {{~it.imgList :value:index }}\n        <a class=\"photo-viewer-item\" href=\"javascript:;\" data-action=\"destoryPhoto\" style=\"width:{{=it.windowWidth}}px;\"> <img data-action=\"destoryPhoto\" data-hook='photoImgage' src=\"{{=value.imgSrc}}\" style=\"opacity: 1;\"> </a>\n        {{~}}\n        </div>\n    </section>\n    <div id=\"bnrs-indic-wrap\" style=\"display: none\" class=\"bnrs-indic-wrap\">   \n        {{~it.imgList :value:index }}\n        <i class=\"j-indic{{=(index+1)}} i-circle bnrs-indic {{? index==0}}indic-focus{{?}}\"></i>\n        {{~}} \n    </div>\n</div>";
+	module.exports = "<div id=\"photo-viewer\" class=\"photo-viewer-back\">\n    <div class=\"loading-card\">\n        <div class=\"line-spin-fade-loader-outter\">\n            <div class=\"line-spin-fade-loader\">\n                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>\n            </div>\n        </div>\n    </div>\n    <section class=\"photo-viewer-content\">\n        {{? !!it.preloadImage}}<img src=\"{{=it.preloadImage.lowLevel}}\" class=\"preload-img\">{{?}}\n        <div id=\"photo-viewer-inner\" class=\"photo-viewer-inner\" data-action=\"destoryPhoto\">\n            {{~it.imgList :value:index }}\n            <a class=\"photo-viewer-item\" href=\"javascript:;\" data-action=\"destoryPhoto\" style=\"width:{{=it.windowWidth}}px;\"> <img data-action=\"destoryPhoto\" data-hook='photoImgage' src=\"{{=value.highLevel}}\" style=\"opacity: 1;\"> </a>\n            {{~}}\n        </div>\n    </section>\n    <div id=\"bnrs-indic-wrap\" style=\"display: none\" class=\"bnrs-indic-wrap\">\n        {{~it.imgList :value:index }}\n        <i class=\"j-indic{{=(index+1)}} i-circle bnrs-indic {{? index==0}}indic-focus{{?}}\"></i>\n        {{~}}\n    </div>\n</div>";
 
 /***/ }
 /******/ ]);

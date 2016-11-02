@@ -49,9 +49,9 @@
         var photoViewer = webpack_photoViewer();
         $(this).find('img').each(function(){
             imgList.push({
-                            imgSrc:$(this).attr('high-level-src'),
-                            originSrc:$(this).attr('src')
-                        })
+                highLevel:$(this).attr('high-level-src'),
+                lowLevel:$(this).attr('src')
+            })
         })
         var order = $(e.target).attr('order') || 0;
         photoViewer.init(
@@ -60,8 +60,8 @@
                     imgList:imgList, //轮播照片列表
                     disableAutoPlay:true, //是否仅用自动播放动画,默认为true
                 }
-        ).show()
-        e.preventDefault();
+        ).show();
+        e.preventDefault();//阻止触发click事件 会关闭相册
     })
 </script>
 </body>

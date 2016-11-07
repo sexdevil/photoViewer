@@ -132,6 +132,7 @@ module.exports = function() {
                     baseScale=3
                 }
                 if(!!self.BAADObj)self.BAADObj.enable = false;
+                e.preventDefault();
             })
             $('#photo-viewer').on('touchmove',function(e){
                 //缩放
@@ -217,7 +218,8 @@ module.exports = function() {
                         self.BAADObj.moveNext();
                     }
                 }
-
+                e.stopPropagation()
+                e.preventDefault(); //防止点透
             })
         },
         showLoading:function(){

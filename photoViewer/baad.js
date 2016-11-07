@@ -106,6 +106,9 @@ Baad.prototype.moveNext = function() {
 Baad.prototype.movePrev = function() {
     this._moveToIdx(this._currIdx-1,0.3);
 }
+Baad.prototype.moveToCurrent = function(){
+    this._moveToIdx(this._currIdx,0);
+}
 
     Baad.prototype._initSwipe = function() {
     var self = this;
@@ -116,6 +119,7 @@ Baad.prototype.movePrev = function() {
     var onMove = function(event) {
         self.clickMoved = true;
         if(!self.enable){
+            self.moveToCurrent();
             return;
         }
         var delta = event.touches[0].pageX - lastEventPos;
